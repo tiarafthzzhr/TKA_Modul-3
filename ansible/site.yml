@@ -1,0 +1,11 @@
+---
+# ============================================================
+# Playbook Utama: Site Playbook
+# Deskripsi: Memberikan semua node dalam inventory role Docker
+# ============================================================
+
+- name: Install Docker Engine pada semua node
+  hosts: all
+  become: yes
+  roles:
+    - docker

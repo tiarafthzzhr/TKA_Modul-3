@@ -1,0 +1,104 @@
+---
+# ============================================================
+# Role: docker
+# Deskripsi: Instalasi Docker Engine + Setup Firewall 
+# ============================================================
+
+# --- 1. Install dependency yang diperlukan ---
+- name: Install required packages for Docker
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common
+    state: present
+    update_cache: yes
+  become: yes
+
+# --- 2. Buat direktori untuk keyrings ---
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  become: yes
+
+# --- 3. Download Docker GPG key ---
+- name: Download Docker official GPG key
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+  args:
+    creates: /etc/apt/keyrings/docker.gpg
+  become: yes
+
+# --- 4. Docker repository (dengan signed-by) ---
+- name: Add Docker APT repository
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+  become: yes
+
+# --- 5. Install Docker Engine ---
+- name: Install Docker Engine packages
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+  become: yes
+
+# --- 6. Pastikan service Docker berjalan dan enabled ---
+- name: Ensure Docker service is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+# --- 7. Tambahkan user ke group docker ( tidak perlu sudo ) ---
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+  become: yes
+
+# --- 8. Setup Firewall (UFW) - Allow hanya port 22 ---
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+  become: yes
+
+- name: Set UFW default deny incoming
+  ufw:
+    direction: incoming
+    policy: deny
+  become: yes
+
+- name: Set UFW default allow outgoing
+  ufw:
+    direction: outgoing
+    policy: allow
+  become: yes
+
+- name: Allow SSH (port 22) through firewall
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+  become: yes
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+  become: yes
