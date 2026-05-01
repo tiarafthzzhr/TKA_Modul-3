@@ -1,0 +1,57 @@
+---
+# ============================================================
+# Role: frontend
+# Deskripsi: Deploy Frontend 
+# ============================================================
+
+- name: Buka port frontend menggunakan ufw
+  community.general.ufw:
+    rule: allow
+    port: "{{ frontend_port }}"
+    proto: tcp
+  become: yes
+
+- name: Buat direktori frontend
+  file:
+    path: /home/ubuntu/frontend
+    state: directory
+    mode: '0755'
+
+- name: Copy source code frontend
+  synchronize:
+    src: ../../../../frontend-20260428T044054Z-3-001/frontend/
+    dest: /home/ubuntu/frontend/
+    delete: yes
+    recursive: yes
+
+- name: Copy frontend Dockerfile
+  copy:
+    src: ../../../../frontend-20260428T044054Z-3-001/frontend/Dockerfile
+    dest: /home/ubuntu/frontend/Dockerfile
+
+- name: Template config.js
+  template:
+    src: config.js.j2
+    dest: /home/ubuntu/frontend/config.js
+
+- name: Template docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/ubuntu/frontend/docker-compose.yml
+
+- name: Start docker-compose frontend
+  community.docker.docker_compose_v2:
+    project_src: /home/ubuntu/frontend
+    build: always
+    state: present
+  become: yes
+
+- name: Tunggu frontend hingga siap (Health check)
+  uri:
+    url: "http://localhost:{{ frontend_port }}/"
+    method: GET
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 10
+  delay: 5
