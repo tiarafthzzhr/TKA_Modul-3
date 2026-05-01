@@ -13,7 +13,30 @@ ansible-playbook -i inventory.yml site.yml
 
 Ini akan mengonfigurasi `node1` untuk Backend (beserta database) dan `node2` untuk Frontend.
 
-## 2. Verifikasi Praktikan 2 (Backend)
+## 2. Verifikasi Praktikan 1 (Instalasi Docker)
+Sesuai instruksi, Praktikan 1 harus memastikan koneksi Ansible dan membuktikan Docker terinstal di dalam *node* VM:
+
+**Ping semua node dengan Ansible:**
+```bash
+ansible -i inventory.yml all -m ping
+```
+*(Pastikan hasilnya hijau / "pong" untuk semua node)*
+
+**Test Image Hello-World di Node 1:**
+```bash
+ssh ubuntu@10.166.149.18 -i ~/.ssh/id_rsa
+sudo docker run hello-world
+exit
+```
+
+**Test Image Hello-World di Node 2:**
+```bash
+ssh ubuntu@10.166.149.13 -i ~/.ssh/id_rsa
+sudo docker run hello-world
+exit
+```
+
+## 3. Verifikasi Praktikan 2 (Backend)
 Setelah ansible selesai tanpa error, jalankan tes backend menggunakan perintah `curl` dari dalam WSL:
 
 **Health Check Backend:**
@@ -30,7 +53,7 @@ curl -X POST http://10.166.149.18:3000/api/register \
 ```
 *Output yang diharapkan:* `{"message": "Registrasi berhasil! Silakan login."}`
 
-## 3. Verifikasi Praktikan 3 (Frontend)
+## 4. Verifikasi Praktikan 3 (Frontend)
 Untuk frontend, buka browser Anda (Chrome/Edge) dan akses:
 ```text
 http://10.166.149.13:8080/
