@@ -65,40 +65,40 @@
   become: yes
 
 # --- 7. Tambahkan user ke group docker ( tidak perlu sudo ) ---
-- name: Add user to docker group
-  user:
-    name: "{{ ansible_user }}"
-    groups: docker
-    append: yes
-  become: yes
+#- name: Add user to docker group
+#  user:
+#    name: "{{ ansible_user }}"
+#    groups: docker
+#    append: yes
+#  become: yes
 
 # --- 8. Setup Firewall (UFW) - Allow hanya port 22 ---
-- name: Install UFW
-  apt:
-    name: ufw
-    state: present
-  become: yes
-
-- name: Set UFW default deny incoming
-  ufw:
-    direction: incoming
-    policy: deny
-  become: yes
-
-- name: Set UFW default allow outgoing
-  ufw:
-    direction: outgoing
-    policy: allow
-  become: yes
-
-- name: Allow SSH (port 22) through firewall
-  ufw:
-    rule: allow
-    port: "22"
-    proto: tcp
-  become: yes
-
-- name: Enable UFW
-  ufw:
-    state: enabled
-  become: yes
+#- name: Install UFW
+#  apt:
+#    name: ufw
+#    state: present
+#  become: yes
+#
+#- name: Set UFW default deny incoming
+#  ufw:
+#    direction: incoming
+#    policy: deny
+#  become: yes
+#
+#- name: Set UFW default allow outgoing
+#  ufw:
+#    direction: outgoing
+#    policy: allow
+#  become: yes
+#
+#- name: Allow SSH (port 22) through firewall
+#  ufw:
+#    rule: allow
+#    port: "22"
+#    proto: tcp
+#  become: yes
+#
+#- name: Enable UFW
+#  ufw:
+#    state: enabled
+#  become: yes

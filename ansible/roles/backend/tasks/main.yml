@@ -1,21 +1,23 @@
----
 # ============================================================
 # Role: backend
-# Deskripsi: Deploy Backend 
+# Deskripsi: Deploy Backend
 # ============================================================
 
-- name: Buka port backend menggunakan ufw
-  community.general.ufw:
-    rule: allow
-    port: "{{ backend_port }}"
-    proto: tcp
-  become: yes
+
+#- name: Buka port backend menggunakan ufw
+#  community.general.ufw:
+#    rule: allow
+#    port: "{{ backend_port }}"
+#    proto: tcp
+#  become: yes
+
 
 - name: Buat direktori backend
   file:
     path: /home/ubuntu/backend
     state: directory
     mode: '0755'
+
 
 - name: Copy source code backend
   synchronize:
@@ -24,27 +26,31 @@
     delete: yes
     recursive: yes
 
+
 - name: Copy backend Dockerfile
   copy:
     src: ../../../../backend-20260428T044102Z-3-001/backend/Dockerfile
     dest: /home/ubuntu/backend/Dockerfile
+
 
 - name: Template .env
   template:
     src: .env.j2
     dest: /home/ubuntu/backend/.env
 
+
 - name: Template docker-compose.yml
   template:
     src: docker-compose.yml.j2
     dest: /home/ubuntu/backend/docker-compose.yml
 
+
 - name: Start docker-compose backend
-  community.docker.docker_compose_v2:
-    project_src: /home/ubuntu/backend
-    build: always
-    state: present
+  command: docker compose up -d --build
+  args:
+    chdir: /home/ubuntu/backend
   become: yes
+
 
 - name: Tunggu backend hingga siap (Health check)
   uri:

@@ -4,17 +4,20 @@
 # Deskripsi: Memberikan semua node dalam inventory role Docker
 # ============================================================
 
+
 - name: Install Docker Engine pada semua node
-  hosts: all
+  hosts: node1
   become: yes
   roles:
     - docker
+
 
 - name: Deploy Backend ke group backend
   hosts: backend
   become: yes
   roles:
     - backend
+
 
 - name: Deploy Frontend ke group frontend
   hosts: frontend

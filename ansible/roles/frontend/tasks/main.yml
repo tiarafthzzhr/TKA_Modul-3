@@ -4,12 +4,12 @@
 # Deskripsi: Deploy Frontend 
 # ============================================================
 
-- name: Buka port frontend menggunakan ufw
-  community.general.ufw:
-    rule: allow
-    port: "{{ frontend_port }}"
-    proto: tcp
-  become: yes
+#- name: Buka port frontend menggunakan ufw
+#  community.general.ufw:
+#    rule: allow
+#    port: "{{ frontend_port }}"
+#    proto: tcp
+#  become: yes
 
 - name: Buat direktori frontend
   file:
@@ -40,10 +40,9 @@
     dest: /home/ubuntu/frontend/docker-compose.yml
 
 - name: Start docker-compose frontend
-  community.docker.docker_compose_v2:
-    project_src: /home/ubuntu/frontend
-    build: always
-    state: present
+  command: docker compose up -d --build
+  args:
+    chdir: /home/ubuntu/frontend
   become: yes
 
 - name: Tunggu frontend hingga siap (Health check)

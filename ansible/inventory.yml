@@ -3,9 +3,8 @@ all:
     backend:
       hosts:
         node1:
-          ansible_host: 10.166.149.18   # IP Multipass node 1
-          ansible_user: ubuntu
-          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          ansible_host: 127.0.0.1
+          ansible_connection: local
       vars:
         db_name: vibe_db
         db_username: vibe_user
@@ -15,9 +14,8 @@ all:
     frontend:
       hosts:
         node2:
-          ansible_host: 10.166.149.13    # IP Multipass node 2
-          ansible_user: ubuntu
-          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          ansible_host: 127.0.0.1
+          ansible_connection: local
       vars:
         frontend_port: 8080
         backend_url: "http://localhost:3000"
